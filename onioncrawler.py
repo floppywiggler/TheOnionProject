@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-print(bcolors.OKGREEN + "[*] Starting TORSpider..." + bcolors.ENDC)
+print("[*] Starting TORSpider...")
 
 import multiprocessing
 import pickle
@@ -74,7 +74,7 @@ def main():
 			url = queue_list[0]
 			queue_list = queue_list[1:]
 
-			print(bcolors.OKBLUE + "[*] Crawling website: %s..." % url + bcolors.ENDC)
+			print("[*] Crawling website: %s..." % url)
 			response = session.get(url, proxies={'http': '127.0.0.1:8118'})
 
 			# The default object type of absolute_links is
@@ -86,6 +86,10 @@ def main():
 
 			finished_list.append(url)
 			queue_list = list((set(queue_list).union(new_to_crawl)).difference(set(finished_list)))
+
+			with open('new.list', 'a+') as f:
+				for line in finished_list:
+					f.write(line)
 
 		except TypeError:
 			# this would be the end of the queue
