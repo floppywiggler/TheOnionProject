@@ -8,7 +8,7 @@ import subprocess
 import os
 from sys import argv, exit
 from classes.bcolors import bcolors
-from classes.checkCl import checkIPs, checkLink, extrOnionLink
+from classes.query import checkIPs, checkLink, extrOnionLink
 
 
 subprocess.call('clear')
