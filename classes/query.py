@@ -4,7 +4,10 @@ import json
 from urllib3.contrib.socks import SOCKSProxyManager
 from bs4 import BeautifulSoup
 from classes.bcolors import bcolors
-
+import sqlite3
+conn = sqlite3.connect('onion.db')
+c = conn.cursor()
+c.execute("CREATE TABLE IF NOT EXISTS onionsites (URL, Title , Status, Status_code, last_checked)")
 
 def checkIPs():
     """
@@ -43,11 +46,13 @@ def checkLink(link):
     if response_code >= 200 and response_code < 404:
         status = 'OK'
         print("Title:", bcolors.WARNING + siteTitle + bcolors.ENDC)
-        print("Link: ", bcolors.OKBLUE +  link + bcolors.ENDC , "\nStatus:", bcolors.OKGREEN + status + bcolors.ENDC)
+        print("Link: ", bcolors.OKBLUE + link + bcolors.ENDC, "\nStatus:", bcolors.OKGREEN + status + bcolors.ENDC)
+        c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, siteTitle,status,response_code,'datetime'))
     elif response_code == 500:
         status = 'Failed'
         print("Status code:", response_code)
         print("Link: ", bcolors.FAIL + link + bcolors.ENDC, "\nStatus:", bcolors.FAIL + status + bcolors.ENDC )
+        c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, 'N/A',status,response_code,'datetime'))
     #else:
      #   print("Response code:", response_code)
 
