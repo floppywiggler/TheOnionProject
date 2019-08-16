@@ -4,10 +4,13 @@ import json
 from urllib3.contrib.socks import SOCKSProxyManager
 from bs4 import BeautifulSoup
 from classes.bcolors import bcolors
+
+## DATABASE HANDLING ##
 import sqlite3
 conn = sqlite3.connect('onion.db')
 c = conn.cursor()
 c.execute("CREATE TABLE IF NOT EXISTS onionsites (URL, Title , Status, Status_code, last_checked)")
+##  END DATABASE HANDLING ##
 
 def checkIPs():
     """
@@ -47,12 +50,12 @@ def checkLink(link):
         status = 'OK'
         print("Title:", bcolors.WARNING + siteTitle + bcolors.ENDC)
         print("Link: ", bcolors.OKBLUE + link + bcolors.ENDC, "\nStatus:", bcolors.OKGREEN + status + bcolors.ENDC)
-        c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, siteTitle,status,response_code,'datetime'))
+        c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, siteTitle,status,response_code,'datetime')) # Storing all the results
     elif response_code == 500:
         status = 'Failed'
         print("Status code:", response_code)
         print("Link: ", bcolors.FAIL + link + bcolors.ENDC, "\nStatus:", bcolors.FAIL + status + bcolors.ENDC )
-        c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, 'N/A',status,response_code,'datetime'))
+        c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, 'N/A',status,response_code,'datetime')) # Storing all the results
     #else:
      #   print("Response code:", response_code)
 
