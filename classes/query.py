@@ -9,7 +9,13 @@ from classes.bcolors import bcolors
 import sqlite3
 conn = sqlite3.connect('onion1.db')
 c = conn.cursor()
-c.execute("CREATE TABLE IF NOT EXISTS onionsites (URL, Title , Status, Status_code, last_checked)")
+c.execute('''CREATE TABLE IF NOT EXISTS "onionsites" (
+	"id"	INTEGER NOT NULL DEFAULT 1 PRIMARY KEY AUTOINCREMENT UNIQUE,
+	"url"	TEXT,
+	"title"	TEXT,
+	"status"	TEXT,
+	"status_code"	INTEGER
+);''')
 ##  END DATABASE HANDLING ##
 
 def checkIPs():
@@ -38,6 +44,7 @@ def checkIPs():
 def checkLink(link):
 
     try:
+        global siteTitle
         proxy = SOCKSProxyManager('socks5h://localhost:9050/')
         websiteObj = proxy.request('GET', link, timeout=3.0)
         response_code = websiteObj.status
@@ -52,7 +59,7 @@ def checkLink(link):
         status = 'OK'
         print("Title:", bcolors.WARNING + siteTitle + bcolors.ENDC)
         print("Link: ", bcolors.OKBLUE + link + bcolors.ENDC, "\nStatus:", bcolors.OKGREEN + status + bcolors.ENDC)
-        c.execute("INSERT INTO 'onionsites' VALUES (?, ?, ? , ?, ?);", (link, siteTitle,status,response_code,'datetime')) # Storing all the results
+        c.execute('''INSERT INTO onionsites (url, title, status, status_code) VALUES (?, ?, ?, ?);''', (str(link), str(siteTitle), str(status), int(response_code))) # Storing all the results
     elif response_code == 500:
         status = 'Failed'
         print("Status code:", response_code)
