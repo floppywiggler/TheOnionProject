@@ -64,7 +64,7 @@ def checkLink(link):
 def extrOnionLink(link):
     pattern = re.compile(r'(.+.onion)')
     matchObj = re.search(pattern, str(link))
-    link = matchObj.group(1)
+    link = matchObj.group()
     return link
 
 
