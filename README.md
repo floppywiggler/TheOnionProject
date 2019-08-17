@@ -19,4 +19,6 @@ Using python to bulk check .onion sites and crawl for new ones
  # Remember that TOR is SINGLE THREADED, so you can easily jack your CPU up to a 100% with this script.
  
  
- ## This code is for educational purposes. I am not responsible for anything you do with this tool. Remember that these are onion links, and not everything you find is something you want to get near. It might even get you into trouble.
+ ## This code is for educational purposes. I am not responsible for anything you do with this tool. Remember that these are "darkweb" links, and not everything you find is something you want to get near. There's even a good chance it's illegal. 
+ 
+ # Use on own responsibility
