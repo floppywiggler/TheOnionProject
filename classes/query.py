@@ -64,7 +64,9 @@ def checkLink(link):
         status = 'Failed'
         print("Status code:", response_code)
         print("Link: ", bcolors.FAIL + str(link) + bcolors.ENDC, "\nStatus:", bcolors.FAIL + status + bcolors.ENDC )
-
+    
+    conn.commit()
+    conn.close()
          #   print("Response code:", response_code)
 
 
