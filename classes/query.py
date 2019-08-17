@@ -7,7 +7,7 @@ from classes.bcolors import bcolors
 
 ## DATABASE HANDLING ##
 import sqlite3
-conn = sqlite3.connect('onion.db')
+conn = sqlite3.connect('onion1.db')
 c = conn.cursor()
 c.execute("CREATE TABLE IF NOT EXISTS onionsites (URL, Title , Status, Status_code, last_checked)")
 ##  END DATABASE HANDLING ##
