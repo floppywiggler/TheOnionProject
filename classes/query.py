@@ -52,12 +52,11 @@ def checkLink(link):
         status = 'OK'
         print("Title:", bcolors.WARNING + siteTitle + bcolors.ENDC)
         print("Link: ", bcolors.OKBLUE + link + bcolors.ENDC, "\nStatus:", bcolors.OKGREEN + status + bcolors.ENDC)
-        c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, siteTitle,status,response_code,'datetime')) # Storing all the results
+        c.execute("INSERT INTO 'onionsites' VALUES (?, ?, ? , ?, ?);", (link, siteTitle,status,response_code,'datetime')) # Storing all the results
     elif response_code == 500:
         status = 'Failed'
         print("Status code:", response_code)
         print("Link: ", bcolors.FAIL + str(link) + bcolors.ENDC, "\nStatus:", bcolors.FAIL + status + bcolors.ENDC )
-        c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, 'N/A',status,response_code,'datetime')) # Storing all the results
 
          #   print("Response code:", response_code)
 
@@ -68,8 +67,8 @@ def extrOnionLink(link):
         matchObj = re.search(pattern, str(link))
         link = matchObj.group()
         return link
-
     except AttributeError as e:
+        print(str(link))
         print("No onion link")
 
 
