@@ -9,8 +9,9 @@ Using python to bulk check .onion sites and crawl for new ones
  It will automatically start scraping for .onion addresses using beautifulsoup, and it will recursively follow these links for more links etc..
  
  ## sitechecker.py is used to validate onion links. 
- Can be used as a standalone script to validate links. Takes a file containing URLs as argument.
- ** Usage **
+ Can be used as a standalone script to validate links. Takes a file containing URLs as argument. Uses regex to extract http***.onion and *.onion strings.
+ 
+ * Usage *
  ` python3 sitechecker.py test.list`
  
  The sitechecker will remove duplicates fed to it to avoid clogging up your pipe.
