@@ -22,6 +22,7 @@ def checkIPs():
     myip = http.request('GET', 'http://httpbin.org/ip')
 
     try:
+        global torIP
         torIP = proxy.request('GET', 'http://httpbin.org/ip')
     except NameError:
         print(bcolors.FAIL + "proxy isn't running or address:port is wrong.\nScript will exit." + bcolors.ENDC)
