@@ -42,5 +42,9 @@ for item in content:
     linkList.append(extrOnionLink(item))
 
 for link in linkList:
-    checkLink(link)
-    print( "-" * 50)
+    try:
+        checkLink(link)
+        print( "-" * 50)
+    except KeyboardInterrupt as escape:
+        print("Exiting..")
+        exit(1)
