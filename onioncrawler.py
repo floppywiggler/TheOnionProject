@@ -171,7 +171,7 @@ def main():
 			queue_list = list((set(queue_list).union(new_to_crawl)).difference(set(finished_list)))
 
 			with open('domains.list', 'a+') as domainstxt:
-				for line in finished_list:
+				for line in found:
 					domainstxt.write(line)
 					domainstxt.write('\n')
 					print(bcolors.OKBLUE + 'Wrote ' + str(line) + ' to txt' + bcolors.ENDC)
