@@ -36,6 +36,7 @@ def checkIPs():
     print(bcolors.FAIL + "="*50 + bcolors.ENDC)
 
 def checkLink(link):
+
     try:
         proxy = SOCKSProxyManager('socks5h://localhost:9050/')
         websiteObj = proxy.request('GET', link, timeout=3.0)
@@ -57,19 +58,21 @@ def checkLink(link):
         print("Status code:", response_code)
         print("Link: ", bcolors.FAIL + str(link) + bcolors.ENDC, "\nStatus:", bcolors.FAIL + status + bcolors.ENDC )
         c.execute("INSERT INTO onionsites VALUES (?, ?, ? , ?, ?)", (link, 'N/A',status,response_code,'datetime')) # Storing all the results
-    #else:
-     #   print("Response code:", response_code)
+
+         #   print("Response code:", response_code)
 
 
 def extrOnionLink(link):
     try:
-
         pattern = re.compile(r'(^http...+.onion)')
         matchObj = re.search(pattern, str(link))
         link = matchObj.group()
+        list.append(link)
         return link
+
     except AttributeError as e:
-        pass
+        print("No onion link")
+
 
 
 

@@ -35,16 +35,24 @@ file_path = current_path + "/" + filename
 with open(file_path) as f:
     content = f.readlines()
 
+def remove_duplicates(linkLST):
+    return list(set(linkLST))
 
 content = [x.strip() for x in content]
 
 for item in content:
     linkList.append(extrOnionLink(item))
 
-for link in linkList:
+clean_list = remove_duplicates(linkList)
+with open('fulltext.list', 'a+') as fulltxt:
+    fulltxt.writelines(clean_list)
+
+
+for link in clean_list:
     try:
         checkLink(link)
         print( "-" * 50)
     except KeyboardInterrupt as escape:
         print("Exiting..")
         exit(1)
+
