@@ -45,7 +45,7 @@ for item in content:
 
 clean_list = remove_duplicates(linkList)
 with open('fulltext.list', 'a+') as fulltxt:
-    fulltxt.writelines(clean_list)
+    fulltxt.write(str(clean_list))
 
 
 for link in clean_list:

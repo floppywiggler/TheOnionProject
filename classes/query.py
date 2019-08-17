@@ -67,7 +67,6 @@ def extrOnionLink(link):
         pattern = re.compile(r'(^http...+.onion)')
         matchObj = re.search(pattern, str(link))
         link = matchObj.group()
-        list.append(link)
         return link
 
     except AttributeError as e:
