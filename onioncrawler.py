@@ -5,10 +5,91 @@ print("[*] Starting TORSpider...")
 import multiprocessing
 import pickle
 import requests_html
-import socket
-import sys
-import time
+import argparse
 from classes.bcolors import bcolors
+import re
+
+global url
+
+def get_titles():
+	print("Loaded get_titles function")
+	title_link = {}
+	with open("short.pickle", 'rb') as s:
+		domains = pickle.load(s)
+
+	session = requests_html.HTMLSession()
+
+	while True:
+		try:
+			url = domains[0]
+			domains = domains[1:]
+			response = session.get(url, proxies={'http': '127.0.0.1:8118'})
+			title = response.html.find("title")[0].text
+			title_link[url] = title
+
+		except IndexError:
+			break
+
+		except Exception as e:
+			print(str(e))
+			break
+
+	with open('titles.pickle', 'wb') as t:
+		pickle.dump(title_link, t)
+
+	print("Finished titles")
+
+
+def get_domains():
+	"""
+	This script helps with a personal project for which the
+		hidden-spider was made. This script will take the
+		finished queue ('full.pickle') and get the domain names
+		of the websites and store them in a new pickle file ('short.pickle')
+	"""
+	print("Loaded get_domains function!")
+	# Open full.pickle
+	with open('full.pickle', 'rb') as f:
+		finished_list = pickle.load(f)
+
+	# Check if index is in the url, if so, go ahead and add it
+	non_domains_homepage = list(filter(lambda x: 'index' in x, finished_list))
+	fin = []
+	for url in non_domains_homepage:
+		if url not in finished_list:
+			fin.append(url)
+
+	# Using map, get just the domain names of every link
+	domains = map(lambda x: "/".join(x.split('/')[:3]), fin)
+
+
+	# Take the list from map and turn it into a set (to remove dups)
+	domains = str(domains) + str(non_domains_homepage)
+	domains = list(set(domains))
+
+
+
+	# Change the set back into a list and pickle it into 'short.pickle'
+	with open('short.pickle', 'wb') as s:
+		pickle.dump(domains, s)
+
+
+
+	print(bcolors.OKGREEN + "finished with domains! Moving to titles.." + bcolors.ENDC)
+	get_titles()
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--domains', help='Get domains')
+parser.add_argument('--titles', help='Get titles')
+
+args = parser.parse_args()
+
+if args.domains:
+	get_domains()
+
+if args.titles:
+	get_titles()
 
 
 def saveProgramState(queue_list, finished_list):
@@ -46,6 +127,8 @@ def main():
 	# 	Hash the data to make sure the data is correct when it
 	# 	is loaded again (unless the module does that for us.. not real sure)
 	try:
+		global q
+		global f
 		q = open("queue.pickle", 'rb')
 		f = open("full.pickle", 'rb')
 		# Add a hash check here
@@ -57,6 +140,7 @@ def main():
 		# 	Hidden Wiki (link active as of October 2018)
 		queue_list = ["http://zqktlwi4fecvo6ri.onion/wiki/index.php/Main_Page"]
 		finished_list = []
+
 		q = open("queue.pickle", 'wb')
 		f = open("full.pickle", 'wb')
 
@@ -65,7 +149,6 @@ def main():
 		f.close()
 
 	session = requests_html.HTMLSession()
-
 	print(bcolors.OKGREEN + "[*] Starting to crawl..." + bcolors.ENDC)
 
 	while True:
@@ -74,22 +157,24 @@ def main():
 			url = queue_list[0]
 			queue_list = queue_list[1:]
 
-			print("[*] Crawling website: %s..." % url)
+			print(bcolors.HEADER + "[*] Crawling website: %s..." % url + bcolors.ENDC)
 			response = session.get(url, proxies={'http': '127.0.0.1:8118'})
 
 			# The default object type of absolute_links is
 			# 	a non-iterable 'set' object. Turn it into a list
 			# 	to be able to iterate over it
 			found = list(response.html.absolute_links)
+
 			print(bcolors.OKGREEN + "\t[*] Found %s links" % len(found) + bcolors.ENDC)
 			new_to_crawl = parseNewLinks(found)
-
 			finished_list.append(url)
 			queue_list = list((set(queue_list).union(new_to_crawl)).difference(set(finished_list)))
 
-			with open('new.list', 'a+') as f:
+			with open('domains.list', 'a+') as domainstxt:
 				for line in finished_list:
-					f.write(line)
+					domainstxt.write(line)
+					domainstxt.write('\n')
+					print(bcolors.OKBLUE + 'Wrote ' + str(line) + ' to txt' + bcolors.ENDC)
 
 		except TypeError:
 			# this would be the end of the queue
@@ -114,72 +199,13 @@ def main():
 	print("[---] Now getting domains for all the URLs!: ")
 	get_domains()
 
+def extrOnionLink(file):
+	with open(file, 'r+') as of:
+		pattern = re.compile(r'(.+.onion)')
+		matchObj = re.search(pattern, str(file))
+		link = matchObj.group(1)
+		return link
 
-
-def get_titles():
-	print("Loaded get_titles function")
-	title_link = {}
-	with open("short.pickle", 'rb') as s:
-		domains = pickle.load(s)
-
-	session = requests_html.HTMLSession()
-
-	while True:
-		try:
-			url = domains[0]
-			domains = domains[1:]
-			response = session.get(url, proxies={'http': '127.0.0.1:8118'})
-
-			title = response.html.find("title")[0].text
-
-			title_link[url] = title
-
-		except IndexError:
-			break
-
-		except Exception as e:
-			print(str(e))
-			break
-
-	with open('titles.pickle', 'wb') as t:
-		pickle.dump(title_link, t)
-
-	print("Finished")
-
-
-def get_domains():
-	"""
-	This script helps with a personal project for which the
-		hidden-spider was made. This script will take the
-		finished queue ('full.pickle') and get the domain names
-		of the websites and store them in a new pickle file ('short.pickle')
-	"""
-	print("Loaded get_domains function!")
-	# Open full.pickle
-	with open('full.pickle', 'rb') as f:
-		finished_list = pickle.load(f)
-
-	# Check if index is in the url, if so, go ahead and add it
-	non_domains_homepage = list(filter(lambda x: 'index' in x, finished_list))
-	fin = []
-	for url in non_domains_homepage:
-		if url not in finished_list:
-			fin.append(url)
-
-	# Using map, get just the domain names of every link
-
-	domains = map(lambda x: "/".join(x.split('/')[:3]), fin)
-
-
-	# Take the list from map and turn it into a set (to remove dups)
-	domains = str(domains) + str(non_domains_homepage)
-	domains = list(set(domains))
-
-	# Change the set back into a list and pickle it into 'short.pickle'
-	with open('short.pickle', 'wb') as s:
-		pickle.dump(domains, s)
-	print(bcolors.OKGREEN + "finished with domains! Moving to titles.." + bcolors.ENDC)
-	get_titles()
 
 if __name__ == '__main__':
 	main()
