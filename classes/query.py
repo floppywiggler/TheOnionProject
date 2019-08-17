@@ -60,13 +60,13 @@ def checkLink(link):
         print("Title:", bcolors.WARNING + siteTitle + bcolors.ENDC)
         print("Link: ", bcolors.OKBLUE + link + bcolors.ENDC, "\nStatus:", bcolors.OKGREEN + status + bcolors.ENDC)
         c.execute('''INSERT INTO onionsites (url, title, status, status_code) VALUES (?, ?, ?, ?);''', (str(link), str(siteTitle), str(status), int(response_code))) # Storing all the results
+        conn.commit()
+
     elif response_code == 500:
         status = 'Failed'
         print("Status code:", response_code)
         print("Link: ", bcolors.FAIL + str(link) + bcolors.ENDC, "\nStatus:", bcolors.FAIL + status + bcolors.ENDC )
-    
-    conn.commit()
-    conn.close()
+
          #   print("Response code:", response_code)
 
 
@@ -81,7 +81,8 @@ def extrOnionLink(link):
         print("No onion link")
 
 
-
+if __name__ == '__main__':
+    conn.close()
 
 
 
